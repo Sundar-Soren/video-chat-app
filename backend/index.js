@@ -8,7 +8,6 @@ const io = require("socket.io")(server, {
     methods: ["GET", "POST"],
   },
 });
-
 app.use(cors());
 const POST = process.env.POST || 5000;
 
@@ -18,15 +17,17 @@ app.get("/", (req, res) => {
 
 io.on("connection", (socket) => {
   socket.emit("me", socket.id);
+
   socket.on("disconnect", () => {
-    socket.broadcast.emit("callended");
+    socket.broadcast.emit("callEnded");
   });
-  socket.on("calluser", ({ userToCall, signalData, from, name }) => {
-    io.to(userToCall).emit("calluser", { signal: signalData, from, name });
+
+  socket.on("callUser", ({ userToCall, signalData, from, name }) => {
+    io.to(userToCall).emit("callUser", { signal: signalData, from, name });
   });
-  socket.on("answercall", (data) => {
-    io.to(data.to).emit("callaccepted", data.signal);
+
+  socket.on("answerCall", (data) => {
+    io.to(data.to).emit("callAccepted", data.signal);
   });
 });
-
 server.listen(POST, () => console.log(`Server is running at ${POST}`));
